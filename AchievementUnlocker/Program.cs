@@ -40,7 +40,7 @@ public static class Program
 
             Regex rgx = new Regex("[^a-zA-Z0-9 ()$:_ -]");
             gameName = rgx.Replace(gameName, "");
-            string arguments = $"{string.Concat(string.Join(' ', gameName))} {appId}";
+            string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()}";
         
             var agent = Process.Start(new ProcessStartInfo
             {
@@ -163,7 +163,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to parse XML as Dictionary\n{ex}");
+            Log.Error("Failed to parse XML as Dictionary\n{Error}", ex);
             return null!;
         }
     }

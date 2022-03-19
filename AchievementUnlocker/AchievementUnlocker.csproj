@@ -38,6 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\AchievementUnlockerAgent\AchievementUnlockerAgent.csproj" />
         <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 

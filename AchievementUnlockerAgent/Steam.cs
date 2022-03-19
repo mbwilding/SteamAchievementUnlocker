@@ -4,15 +4,16 @@ namespace AchievementUnlockerAgent;
 
 using Steamworks;
 
-public class SteamWorksFuncs : IDisposable
+public class Steam : IDisposable
 {
-    private readonly string IdFile = "steam_appid.txt";
+    private readonly string _appIdFile = "steam_appid.txt";
+    private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
     
     public void Dispose()
     {
         SteamAPI.Shutdown();
         SteamAPI.ReleaseCurrentThreadMemory();
-        File.Delete(IdFile);
+        File.Delete(_appIdFile);
     }
 
     public int Init(string gameName, string appId)
@@ -22,14 +23,16 @@ public class SteamWorksFuncs : IDisposable
         Log.Information("Game: {GameName}", gameName);
         Log.Information("App: {AppId}", appId);
         var achievements = ListAchievements();
-        UnlockAchievements(achievements);
-        Log.Information("{Delimiter}", string.Concat(Enumerable.Repeat("-", 20)));
+        if (achievements.Count != 0)
+            UnlockAchievements(achievements);
+        Log.Information("{Delimiter}", _delimiter);
+        Dispose();
         return 0;
     }
 
-    public bool Connect(string appId)
+    private bool Connect(string appId)
     {
-        File.WriteAllText(IdFile, appId);
+        File.WriteAllText(_appIdFile, appId);
         try
         {
             return SteamAPI.Init();
@@ -64,11 +67,28 @@ public class SteamWorksFuncs : IDisposable
     
     private void UnlockAchievements(List<string> achievements)
     {
-        Log.Information("Unlocking all achievements");
+        Log.Information("{Delimiter}", _delimiter);
         foreach (var achievement in achievements)
         {
-            SteamUserStats.SetAchievement(achievement);
-            Log.Information("Unlocked: {Achievement}", achievement);
+            try
+            {
+                if (SteamUserStats.GetAchievement(achievement, out bool done))
+                {
+                    if (!done)
+                    {
+                        if (SteamUserStats.SetAchievement(achievement))
+                            Log.Information("Unlocked: {Achievement}", achievement);
+                        continue;
+                    }
+                    Log.Information("Completed: {Achievement}", achievement);
+                    continue;
+                }
+                Log.Error("Failed: {Achievement}", achievement);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception: {Achievement}", achievement);
+            }
         }
     }
 }
