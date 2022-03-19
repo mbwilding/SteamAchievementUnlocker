@@ -182,8 +182,8 @@ public static class Program
 
     private static uint ReadRegistry(string basePath, string dword)
     {
-#if WIN64
-...        Microsoft.Win32.RegistryKey key = Microsoft.Win32.RegistryKey.OpenBaseKey(
+#if WIN
+        Microsoft.Win32.RegistryKey key = Microsoft.Win32.RegistryKey.OpenBaseKey(
             Microsoft.Win32.RegistryHive.CurrentUser, Microsoft.Win32.RegistryView.Registry64);
         key = key.OpenSubKey(basePath);
         
