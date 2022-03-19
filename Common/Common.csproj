@@ -9,14 +9,26 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <OutputPath>..\Build\bin\Debug\</OutputPath>
+        <OutputPath>..\Build\Debug\</OutputPath>
         <PlatformTarget>x64</PlatformTarget>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <OutputPath>..\Build\bin\Release\</OutputPath>
+        <OutputPath>..\Build\Release\</OutputPath>
         <DebugType>none</DebugType>
         <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+        <DefineConstants>WIN</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
+        <DefineConstants>MAC</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">
+        <DefineConstants>LINUX</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,21 +37,21 @@
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
     </ItemGroup>
 
-    <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <ItemGroup Condition="$(DefineConstants.Contains('WIN'))">
         <Content Include="runtimes\Win\*.*">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
-    <ItemGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
+    <ItemGroup Condition="$(DefineConstants.Contains('MAC'))">
         <Content Include="runtimes\Mac\*.*">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
-    <ItemGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">
+    <ItemGroup Condition="$(DefineConstants.Contains('LINUX'))">
         <Content Include="runtimes\Linux\*.*">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

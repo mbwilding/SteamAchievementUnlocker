@@ -1,11 +1,12 @@
-﻿using Common;
-
-namespace AchievementUnlockerAgent;
+﻿namespace AchievementUnlockerAgent;
 
 public static class Program
 {
     private static int Main(string[] args)
     {
+#if LINUX
+        Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
+#endif
         if (args.Length < 2) return 1;
 
         string gameName = string.Empty;
@@ -18,9 +19,6 @@ public static class Program
 
         Common.Serilog.Init("Achievements");
         
-        if(Platform.OS.IsLinux())
-            Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
-
         var steam = new SteamWorksFuncs();
         var result = steam.Init(gameName, appId);
         steam.Dispose();

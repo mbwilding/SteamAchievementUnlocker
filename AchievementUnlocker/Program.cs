@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Xml.Linq;
-using Common;
 using Serilog;
 
 namespace AchievementUnlocker;
@@ -10,7 +9,7 @@ public static class Program
     private static void Main()
     {
         Common.Serilog.Init("AchievementUnlocker");
-
+        string app = string.Empty;
 #if WIN
         bool first = true;
         while (ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser") == 0)
@@ -23,21 +22,13 @@ public static class Program
                 
             Thread.Sleep(500);
         }
+        app = "Agent.exe";
+#elif LINUX
+        app = "Agent";
+        Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
         
         var games = GetGameList().Result;
-        
-        string app = string.Empty;
-        if (Platform.OS.IsWindows())
-        {
-            app = "Agent.exe";
-        }
-        else if (Platform.OS.IsLinux())
-        {
-            app = "Agent";
-            Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
-        }
-
         foreach (var game in games)
         {
             var gameName = game.Key
@@ -85,22 +76,19 @@ public static class Program
             ulong steamId3 = ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser");
             profileId = ((ulong)1 << 56) | ((ulong)1 << 52) | ((ulong)1 << 32) | steamId3;
         }
+#elif LINUX
+        var homeDir = Environment.GetEnvironmentVariable("HOME");
+        var file = ".steam/steam/config/loginusers.vdf";
+        var combined = Path.Combine(homeDir!, file);
+        var lines = await File.ReadAllLinesAsync(combined);
+        var steamIds = lines
+            .ToList()
+            .Find(x => x.StartsWith("\t\"765"))!
+            .Replace("\t", "")
+            .Replace("\"", "");
+
+        profileId = ulong.Parse(steamIds);
 #endif
-
-        if (Platform.OS.IsLinux())
-        {
-            var homeDir = Environment.GetEnvironmentVariable("HOME");
-            var file = ".steam/steam/config/loginusers.vdf";
-            var combined = Path.Combine(homeDir!, file);
-            var lines = await File.ReadAllLinesAsync(combined);
-            var steamIds = lines
-                .ToList()
-                .Find(x => x.StartsWith("\t\"765"))!
-                .Replace("\t", "")
-                .Replace("\"", "");
-
-            profileId = ulong.Parse(steamIds);
-        }
         
         var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=1";
         
