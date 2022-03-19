@@ -12,6 +12,7 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <OutputPath>..\Build\bin\Release\</OutputPath>
+	  <DebugType>none</DebugType>
     </PropertyGroup>
 
     <ItemGroup>

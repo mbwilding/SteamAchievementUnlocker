@@ -82,8 +82,6 @@ public static class Program
         }
         
         Log.Information("Finished");
-        
-        Console.WriteLine("Press any key to exit");
         Console.ReadLine();
     }
 

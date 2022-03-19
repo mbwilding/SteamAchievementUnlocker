@@ -1,0 +1,11 @@
+﻿Instructions
+------------
+Sign in to steam here: https://steamcommunity.com/my/edit/settings
+From your Steam Profile, click the Edit Profile link under your displayed badge
+Click the My Privacy Settings tab
+Set 'Game details' to 'Public'
+
+Sign in to steam here: https://steamdb.info/user/
+Click the green "Sync Now" button
+
+You are now ready to run the AchievementUnlocker
