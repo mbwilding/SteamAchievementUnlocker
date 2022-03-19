@@ -80,7 +80,7 @@ public class Steam : IDisposable
                             Log.Information("Unlocked: {Achievement}", achievement);
                         continue;
                     }
-                    Log.Information("Completed: {Achievement}", achievement);
+                    Log.Information("Complete: {Achievement}", achievement);
                     continue;
                 }
                 Log.Error("Failed: {Achievement}", achievement);
