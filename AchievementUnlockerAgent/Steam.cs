@@ -4,7 +4,7 @@ namespace AchievementUnlockerAgent;
 
 using Steamworks;
 
-public class Steam : IDisposable
+internal class Steam : IDisposable
 {
     private readonly string _appIdFile = "steam_appid.txt";
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));

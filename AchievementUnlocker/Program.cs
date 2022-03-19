@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AchievementUnlocker;
 
-public static class Program
+internal static class Program
 {
     private static void Main()
     {
