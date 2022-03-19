@@ -24,8 +24,6 @@ public static class Program
             Thread.Sleep(500);
         }
 #endif
-        Log.Information("Started");
-
         var games = GetGameList().Result;
 
         string steamworksDll = "Steamworks.NET.dll";
@@ -115,7 +113,7 @@ public static class Program
             profileId = ulong.Parse(steamIds.FirstOrDefault()!);
         }
         
-        var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=1";
+        var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=0";
         
         try
         {
@@ -127,54 +125,68 @@ public static class Program
                 // Above three lines can be replaced with new helper method below
                 // string responseBody = await client.GetStringAsync(uri);
 
-                return ParseXmlToDictionary(responseBody);
+                var dict = ParseXmlToDictionary(responseBody);
+                if (dict == null || dict.Count == 0)
+                    SettingFailure();
+                return dict!;
             }
         }
-        catch(HttpRequestException ex)
+        catch(Exception)
         {
-            string msg = "Make sure your steam profile is public";
-            Log.Error("{Msg}\n{Error}", msg, ex.Message);
-            throw new Exception(msg, ex);
+            SettingFailure();
         }
+
+        return default!;
+    }
+
+    private static void SettingFailure()
+    {
+        const string errorMsg = "Preparation required\n\n" +
+                       "Sign in to steam here: 'https://steamcommunity.com/my/edit/settings'\n" +
+                       "Set 'Game details' to 'Public'\n\n" +
+                       "Then re-run this program";
+        
+        Log.Error("{Error}", errorMsg);
+        Console.ReadKey();
+        Environment.Exit(1);
     }
     
     private static Dictionary<string, string> ParseXmlToDictionary(string xml)
     {
         XDocument doc = XDocument.Parse(xml, LoadOptions.None);
-
-        var result = new Dictionary<string, string>();
+        
         try
         {
-            var result2 = doc.Descendants("games")
+            var mainNode = doc.Descendants("games")
                 .First()
                 .Elements()
                 .Where(x => x.Name == "game");
 
             var names = new List<string>();
-            var eNames = result2.Descendants("name");
+            var eNames = mainNode.Descendants("name");
             foreach (var element in eNames)
             {
                 names.Add((string) element);
             }
             
             var appIds = new List<string>();
-            var eAppIds = result2.Descendants("appID");
+            var eAppIds = mainNode.Descendants("appID");
             foreach (var element in eAppIds)
             {
                 appIds.Add((string) element);
             }
 
-            var dic = names.Zip(appIds, (k, v) => new { k, v })
+            var dict = names.Zip(appIds, (k, v) => new { k, v })
                 .ToDictionary(x => x.k, x => x.v);
             
             Log.Debug("Successfully parsed XML as Dictionary");
 
-            return dic;
+            return dict;
         }
         catch (Exception ex)
         {
             Log.Error($"Failed to parse XML as Dictionary\n{ex}");
-            return result;
+            return null!;
         }
     }
 
