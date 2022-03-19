@@ -11,7 +11,7 @@ public static class Program
     {
         Common.Serilog.Init("AchievementUnlocker");
 
-#if WIN64
+#if WIN
         bool first = true;
         while (ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser") == 0)
         {
