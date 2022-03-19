@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <AssemblyName>Agent</AssemblyName>
         <Platforms>x64</Platforms>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

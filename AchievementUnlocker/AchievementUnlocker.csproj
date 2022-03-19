@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <ApplicationIcon>Icon.ico</ApplicationIcon>
         <Platforms>x64</Platforms>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
