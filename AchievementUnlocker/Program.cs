@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Xml.Linq;
 using Serilog;
+using System.Text.RegularExpressions;
 
 namespace AchievementUnlocker;
 
@@ -37,17 +38,20 @@ public static class Program
 
             var appId = game.Value;
 
+            Regex rgx = new Regex("[^a-zA-Z0-9 ()$:_ -]");
+            gameName = rgx.Replace(gameName, "");
             string arguments = $"{string.Concat(string.Join(' ', gameName))} {appId}";
-
+        
             var agent = Process.Start(new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = app,
                 Arguments = arguments,
                 CreateNoWindow = true,
-                UseShellExecute = false
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
             });
-            
             if (agent is not null)
             {
                 agent.WaitForExit();
