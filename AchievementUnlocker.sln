@@ -1,28 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AchievementUnlocker", "AchievementUnlocker\AchievementUnlocker.csproj", "{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AchievementUnlocker", "AchievementUnlocker\AchievementUnlocker.csproj", "{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AchievementUnlockerAgent", "AchievementUnlockerAgent\AchievementUnlockerAgent.csproj", "{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AchievementUnlockerAgent", "AchievementUnlockerAgent\AchievementUnlockerAgent.csproj", "{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{39F2999F-CADC-4AB1-923B-37121FF9715B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{39F2999F-CADC-4AB1-923B-37121FF9715B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Debug|x64.ActiveCfg = Debug|x64
+		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Debug|x64.Build.0 = Debug|x64
+		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Release|x64.ActiveCfg = Release|x64
+		{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}.Release|x64.Build.0 = Release|x64
+		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Debug|x64.ActiveCfg = Debug|x64
+		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Debug|x64.Build.0 = Debug|x64
+		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Release|x64.ActiveCfg = Release|x64
+		{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}.Release|x64.Build.0 = Release|x64
+		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Debug|x64.ActiveCfg = Debug|x64
+		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Debug|x64.Build.0 = Debug|x64
+		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Release|x64.ActiveCfg = Release|x64
+		{39F2999F-CADC-4AB1-923B-37121FF9715B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D3073BD-F504-40A7-8586-469FD93DF065}
 	EndGlobalSection
 EndGlobal

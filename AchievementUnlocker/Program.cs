@@ -24,25 +24,17 @@ public static class Program
             Thread.Sleep(500);
         }
 #endif
+        
         var games = GetGameList().Result;
-
-        string steamworksDll = "Steamworks.NET.dll";
-        string exe = string.Empty;
+        
+        string app = string.Empty;
         if (Platform.OS.IsWindows())
         {
-            exe = "Agent.exe";
-            if (File.Exists(steamworksDll))
-                File.Delete(steamworksDll);
-            File.Copy($"runtimes/win-x64/lib/netstandard2.1/{steamworksDll}", steamworksDll);
+            app = "Agent.exe";
         }
         else if (Platform.OS.IsLinux())
         {
-            exe = "Agent";
-            if (File.Exists(steamworksDll))
-                File.Delete(steamworksDll);
-            File.Copy($"runtimes/linux-x64/lib/netstandard2.1/{steamworksDll}", steamworksDll);
-
-
+            app = "Agent";
             Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
         }
 
@@ -59,7 +51,7 @@ public static class Program
             var agent = Process.Start(new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = exe,
+                FileName = app,
                 Arguments = arguments,
                 CreateNoWindow = true,
                 UseShellExecute = false
@@ -86,17 +78,20 @@ public static class Program
     private static async Task<Dictionary<string, string>> GetGameList()
     {
         ulong profileId = 0;
+        
+#if WIN
         if (Platform.OS.IsWindows())
         {
             ulong steamId3 = ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser");
             profileId = ((ulong)1 << 56) | ((ulong)1 << 52) | ((ulong)1 << 32) | steamId3;
         }
+#endif
 
         if (Platform.OS.IsLinux())
         {
             var homeDir = Environment.GetEnvironmentVariable("HOME");
             var file = ".steam/steam/config/loginusers.vdf";
-            var combined = Path.Combine(homeDir, file);
+            var combined = Path.Combine(homeDir!, file);
             var strings = await File.ReadAllLinesAsync(combined);
             var unformatted = strings
                 .ToList()
@@ -113,7 +108,7 @@ public static class Program
             profileId = ulong.Parse(steamIds.FirstOrDefault()!);
         }
         
-        var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=0";
+        var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=1";
         
         try
         {
@@ -190,18 +185,17 @@ public static class Program
         }
     }
 
+#if WIN
     private static uint ReadRegistry(string basePath, string dword)
     {
-#if WIN
         Microsoft.Win32.RegistryKey key = Microsoft.Win32.RegistryKey.OpenBaseKey(
             Microsoft.Win32.RegistryHive.CurrentUser, Microsoft.Win32.RegistryView.Registry64);
-        key = key.OpenSubKey(basePath);
+        key = key.OpenSubKey(basePath)!;
         
-        if (key != null)
-        {
-            return Convert.ToUInt32(key.GetValue(dword).ToString());
-        }
-#endif
-        return default; // TODO
+        if (key != null!)
+            return Convert.ToUInt32(key.GetValue(dword)!.ToString());
+
+        return default;
     }
+#endif
 }
