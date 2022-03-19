@@ -92,20 +92,14 @@ public static class Program
             var homeDir = Environment.GetEnvironmentVariable("HOME");
             var file = ".steam/steam/config/loginusers.vdf";
             var combined = Path.Combine(homeDir!, file);
-            var strings = await File.ReadAllLinesAsync(combined);
-            var unformatted = strings
+            var lines = await File.ReadAllLinesAsync(combined);
+            var steamIds = lines
                 .ToList()
-                .FindAll(x => x.Contains("765"));
-            var steamIds = new List<string>();
-            foreach (var text in unformatted)
-            {
-                steamIds.Add(text
-                    .Replace("\t", "")
-                    .Replace("\"", "")
-                );
-            }
-            
-            profileId = ulong.Parse(steamIds.FirstOrDefault()!);
+                .Find(x => x.StartsWith("\t\"765"))!
+                .Replace("\t", "")
+                .Replace("\"", "");
+
+            profileId = ulong.Parse(steamIds);
         }
         
         var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=1";
