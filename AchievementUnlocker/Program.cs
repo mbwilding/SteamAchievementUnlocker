@@ -9,7 +9,7 @@ public static class Program
     private static void Main()
     {
         Common.Serilog.Init("AchievementUnlocker");
-        string app = string.Empty;
+        
 #if WIN
         bool first = true;
         while (ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser") == 0)
@@ -22,9 +22,9 @@ public static class Program
                 
             Thread.Sleep(500);
         }
-        app = "Agent.exe";
+        string app = "Agent.exe";
 #elif LINUX
-        app = "Agent";
+        string app = "Agent";
         Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
         
@@ -71,11 +71,8 @@ public static class Program
         ulong profileId = 0;
         
 #if WIN
-        if (Platform.OS.IsWindows())
-        {
-            ulong steamId3 = ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser");
-            profileId = ((ulong)1 << 56) | ((ulong)1 << 52) | ((ulong)1 << 32) | steamId3;
-        }
+        ulong steamId3 = ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser");
+        profileId = ((ulong)1 << 56) | ((ulong)1 << 52) | ((ulong)1 << 32) | steamId3;
 #elif LINUX
         var homeDir = Environment.GetEnvironmentVariable("HOME");
         var file = ".steam/steam/config/loginusers.vdf";
