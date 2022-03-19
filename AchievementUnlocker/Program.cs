@@ -41,17 +41,19 @@ public static class Program
             Regex rgx = new Regex("[^a-zA-Z0-9 ()$:_ -]");
             gameName = rgx.Replace(gameName, "");
             string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()}";
-        
-            var agent = Process.Start(new ProcessStartInfo
+            var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = app,
                 Arguments = arguments,
                 CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            });
+                UseShellExecute = false
+            };
+#if LINUX
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+#endif
+            var agent = Process.Start(startInfo);
             if (agent is not null)
             {
                 agent.WaitForExit();
