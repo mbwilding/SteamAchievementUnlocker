@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Xml.Linq;
+using Common;
 using Serilog;
-using Microsoft.Win32;
 
 namespace AchievementUnlocker;
 
@@ -11,6 +11,7 @@ public static class Program
     {
         Common.Serilog.Init("AchievementUnlocker");
 
+#if WIN64
         bool first = true;
         while (ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser") == 0)
         {
@@ -22,11 +23,31 @@ public static class Program
                 
             Thread.Sleep(500);
         }
-        
+#endif
         Log.Information("Started");
 
         var games = GetGameList().Result;
-        
+
+        string steamworksDll = "Steamworks.NET.dll";
+        string exe = string.Empty;
+        if (Platform.OS.IsWindows())
+        {
+            exe = "Agent.exe";
+            if (File.Exists(steamworksDll))
+                File.Delete(steamworksDll);
+            File.Copy($"runtimes/win-x64/lib/netstandard2.1/{steamworksDll}", steamworksDll);
+        }
+        else if (Platform.OS.IsLinux())
+        {
+            exe = "Agent";
+            if (File.Exists(steamworksDll))
+                File.Delete(steamworksDll);
+            File.Copy($"runtimes/linux-x64/lib/netstandard2.1/{steamworksDll}", steamworksDll);
+
+
+            Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
+        }
+
         foreach (var game in games)
         {
             var gameName = game.Key
@@ -36,11 +57,11 @@ public static class Program
             var appId = game.Value;
 
             string arguments = $"{string.Concat(string.Join(' ', gameName))} {appId}";
-            
+
             var agent = Process.Start(new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "Agent.exe",
+                FileName = exe,
                 Arguments = arguments,
                 CreateNoWindow = true,
                 UseShellExecute = false
@@ -68,8 +89,34 @@ public static class Program
 
     private static async Task<Dictionary<string, string>> GetGameList()
     {
-        ulong steamId3 = ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser");
-        var profileId = ((ulong)1 << 56) | ((ulong)1 << 52) | ((ulong)1 << 32) | steamId3;
+        ulong profileId = 0;
+        if (Platform.OS.IsWindows())
+        {
+            ulong steamId3 = ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser");
+            profileId = ((ulong)1 << 56) | ((ulong)1 << 52) | ((ulong)1 << 32) | steamId3;
+        }
+
+        if (Platform.OS.IsLinux())
+        {
+            var homeDir = Environment.GetEnvironmentVariable("HOME");
+            var file = ".steam/steam/config/loginusers.vdf";
+            var combined = Path.Combine(homeDir, file);
+            var strings = await File.ReadAllLinesAsync(combined);
+            var unformatted = strings
+                .ToList()
+                .FindAll(x => x.Contains("765"));
+            var steamIds = new List<string>();
+            foreach (var text in unformatted)
+            {
+                steamIds.Add(text
+                    .Replace("\t", "")
+                    .Replace("\"", "")
+                );
+            }
+            
+            profileId = ulong.Parse(steamIds.FirstOrDefault()!);
+        }
+        
         var url = $"https://steamcommunity.com/profiles/{profileId}/games?xml=1";
         
         try
@@ -135,14 +182,16 @@ public static class Program
 
     private static uint ReadRegistry(string basePath, string dword)
     {
-        RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
+#if WIN64
+...        Microsoft.Win32.RegistryKey key = Microsoft.Win32.RegistryKey.OpenBaseKey(
+            Microsoft.Win32.RegistryHive.CurrentUser, Microsoft.Win32.RegistryView.Registry64);
         key = key.OpenSubKey(basePath);
         
         if (key != null)
         {
             return Convert.ToUInt32(key.GetValue(dword).ToString());
         }
-
+#endif
         return default; // TODO
     }
 }
