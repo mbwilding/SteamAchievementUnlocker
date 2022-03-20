@@ -72,10 +72,7 @@ internal static class Program
                 Log.Error("Agent failed to launch: {GameName}", gameName);
             }
         }
-        
-        Log.Debug("Finished: {Title}", Title);
-        Console.WriteLine("Press 'ENTER' to exit");
-        Console.ReadLine();
+        Log.Information("Finished: {Title}", Title);
     }
 
     private static async Task<Dictionary<string, string>> GetGameList()
@@ -133,7 +130,6 @@ internal static class Program
                        "Then re-run this program";
         
         Log.Error("{Error}", errorMsg);
-        Console.ReadKey();
         Environment.Exit(1);
     }
     

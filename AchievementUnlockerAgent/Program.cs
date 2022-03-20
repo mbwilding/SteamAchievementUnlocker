@@ -18,20 +18,21 @@ internal static class Program
         string gameName = string.Empty;
         string appId = string.Empty;
 
-        if (Debug)
 #pragma warning disable CS0162
+        if (Debug)
         {
             // ReSharper disable once HeuristicUnreachableCode
             gameName = DebugGameName;
             appId = DebugAppId;
         }
-#pragma warning restore CS0162
         else
+#pragma warning restore CS0162
         {
             if (args.Length == 1)
             {
                 string id = args[0];
-                if (uint.TryParse(id, out _)) return;
+                if (!uint.TryParse(id, out _))
+                    Environment.Exit(1);
                 gameName = appId = id;
             }
             else

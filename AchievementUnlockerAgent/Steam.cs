@@ -8,7 +8,6 @@ internal class Steam : IDisposable
 {
     private readonly string _appIdFile = "steam_appid.txt";
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
-    private readonly int Threads = 3;
 
     public void Dispose()
     {
@@ -64,41 +63,42 @@ internal class Steam : IDisposable
     {
         Log.Information("{Delimiter}", _delimiter);
         uint maxAttempts = 3;
-        Parallel.ForEach(achievements, new ParallelOptions{MaxDegreeOfParallelism = Threads}, achievement =>
+        foreach (var achievement in achievements)
         {
             ushort attempt = 0;
             bool unlocked;
-        
+            bool alreadyDone;
+
             do
             {
-                unlocked = Loop(achievement);
-                if (unlocked) break;
+                unlocked = Loop(achievement, out alreadyDone);
+                if (unlocked || alreadyDone) break;
                 attempt++;
-            }
-            while (attempt < maxAttempts);
-            
-            if (unlocked)
+            } while (attempt < maxAttempts);
+
+            if (alreadyDone)
+                Log.Information("Done: {Achievement}", achievement);
+            else if (unlocked)
                 Log.Information("Unlocked: {Achievement}", achievement);
             else
                 Log.Error("Failed: {Achievement}", achievement);
-        });
+        }
     }
     
-    private bool Loop(string achievement)
+    private bool Loop(string achievement, out bool alreadyDone)
     {
         try
         {
-            if (!SteamUserStats.GetAchievement(achievement, out bool done)) return false;
-            if (done) return true;
-            if (!SteamUserStats.SetAchievement(achievement)) return false;
-            if (!SteamUserStats.GetAchievement(achievement, out bool done2)) return false;
-            if (done2) return true;
-            return false;
+            if (!SteamUserStats.GetAchievement(achievement, out bool done)) { alreadyDone = false; return false; }
+            if (done) { alreadyDone = true; return true; }
+            if (!SteamUserStats.SetAchievement(achievement)) { alreadyDone = false; return false; }
+            if (!SteamUserStats.GetAchievement(achievement, out bool done2)) { alreadyDone = false; return false; }
+            if (done2) { alreadyDone = false; return false; }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Exception: {Achievement}", achievement);
-            return false;
         }
+        { alreadyDone = false; return false; }
     }
 }
