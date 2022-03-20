@@ -8,7 +8,8 @@ internal class Steam : IDisposable
 {
     private readonly string _appIdFile = "steam_appid.txt";
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
-    
+    private readonly int Threads = 3;
+
     public void Dispose()
     {
         SteamAPI.Shutdown();
@@ -16,7 +17,7 @@ internal class Steam : IDisposable
         File.Delete(_appIdFile);
     }
 
-    public int Init(string gameName, string appId)
+    public ushort Init(string gameName, string appId)
     {
         if (!Connect(appId)) return 1;
         SteamUserStats.RequestCurrentStats();
@@ -39,27 +40,21 @@ internal class Steam : IDisposable
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "SteamAPI failed to connect");
+            Log.Error(ex, "SteamAPI failed to connect, make sure Steam is running");
         }
-
         return false;
     }
 
-    private void TotalAchievements()
-    {
-        Log.Information("Achievements: {NumOfAchievements}", SteamUserStats.GetNumAchievements());
-    }
-    
     private List<string> ListAchievements()
     {
-        TotalAchievements();
+        uint achievementCount = SteamUserStats.GetNumAchievements();
+        Log.Information("Achievements: {NumOfAchievements}", achievementCount);
         
         var achievements = new List<string>();
-        for (uint i = 0; i < uint.MaxValue; i++)
+        for (uint i = 0; i < achievementCount; i++)
         {
             var name = SteamUserStats.GetAchievementName(i);
-            if (string.IsNullOrEmpty(name))
-                break;
+            if (string.IsNullOrEmpty(name)) break;
             achievements.Add(name);
         }
         return achievements;
@@ -68,27 +63,42 @@ internal class Steam : IDisposable
     private void UnlockAchievements(List<string> achievements)
     {
         Log.Information("{Delimiter}", _delimiter);
-        foreach (var achievement in achievements)
+        uint maxAttempts = 3;
+        Parallel.ForEach(achievements, new ParallelOptions{MaxDegreeOfParallelism = Threads}, achievement =>
         {
-            try
+            ushort attempt = 0;
+            bool unlocked;
+        
+            do
             {
-                if (SteamUserStats.GetAchievement(achievement, out bool done))
-                {
-                    if (!done)
-                    {
-                        if (SteamUserStats.SetAchievement(achievement))
-                            Log.Information("Unlocked: {Achievement}", achievement);
-                        continue;
-                    }
-                    Log.Information("Complete: {Achievement}", achievement);
-                    continue;
-                }
+                unlocked = Loop(achievement);
+                if (unlocked) break;
+                attempt++;
+            }
+            while (attempt < maxAttempts);
+            
+            if (unlocked)
+                Log.Information("Unlocked: {Achievement}", achievement);
+            else
                 Log.Error("Failed: {Achievement}", achievement);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Exception: {Achievement}", achievement);
-            }
+        });
+    }
+    
+    private bool Loop(string achievement)
+    {
+        try
+        {
+            if (!SteamUserStats.GetAchievement(achievement, out bool done)) return false;
+            if (done) return true;
+            if (!SteamUserStats.SetAchievement(achievement)) return false;
+            if (!SteamUserStats.GetAchievement(achievement, out bool done2)) return false;
+            if (done2) return true;
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Exception: {Achievement}", achievement);
+            return false;
         }
     }
 }

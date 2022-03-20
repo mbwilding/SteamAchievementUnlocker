@@ -7,9 +7,12 @@ namespace AchievementUnlocker;
 
 internal static class Program
 {
+    private const string Title = "Achievement Unlocker";
+    
     private static void Main()
     {
-        Common.Serilog.Init("AchievementUnlocker");
+        Common.Serilog.Init(Title);
+        Log.Information("Started: {Title}", Title);
         
 #if WIN
         bool first = true;
@@ -25,6 +28,8 @@ internal static class Program
         }
         string app = "Agent.exe";
 #elif LINUX
+        Log.Information("Make sure Steam is running and logged in");
+        Log.Information("Otherwise the following will all fail");
         string app = "Agent";
         Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
@@ -68,7 +73,8 @@ internal static class Program
             }
         }
         
-        Log.Information("Finished");
+        Log.Debug("Finished: {Title}", Title);
+        Console.WriteLine("Press 'ENTER' to exit");
         Console.ReadLine();
     }
 
@@ -159,7 +165,7 @@ internal static class Program
             var dict = names.Zip(appIds, (k, v) => new { k, v })
                 .ToDictionary(x => x.k, x => x.v);
             
-            Log.Debug("Successfully parsed XML as Dictionary");
+            Log.Information("Total Applications: {Count}", dict.Count);
 
             return dict;
         }
