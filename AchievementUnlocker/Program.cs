@@ -130,6 +130,7 @@ internal static class Program
                        "Then re-run this program";
         
         Log.Error("{Error}", errorMsg);
+        Console.ReadLine();
         Environment.Exit(1);
     }
     
