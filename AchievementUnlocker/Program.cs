@@ -43,7 +43,7 @@ internal static class Program
 
             var appId = game.Value;
 
-            Regex rgx = new Regex("[^a-zA-Z0-9 ()$:_ -]");
+            Regex rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
             gameName = rgx.Replace(gameName, "");
             string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()}";
             var startInfo = new ProcessStartInfo
