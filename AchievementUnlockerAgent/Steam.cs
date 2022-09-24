@@ -1,22 +1,21 @@
 ﻿using Serilog;
+using Steamworks;
 
 namespace AchievementUnlockerAgent;
 
-using Steamworks;
-
 internal class Steam : IDisposable
 {
-    private readonly string _appIdFile = "steam_appid.txt";
+    private const string AppIdFile = "steam_appid.txt";
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
 
     public void Dispose()
     {
         SteamAPI.Shutdown();
         SteamAPI.ReleaseCurrentThreadMemory();
-        File.Delete(_appIdFile);
+        File.Delete(AppIdFile);
     }
 
-    public ushort Init(string gameName, string appId)
+    internal ushort Init(string gameName, string appId)
     {
         if (!Connect(appId)) return 1;
         SteamUserStats.RequestCurrentStats();
@@ -32,7 +31,7 @@ internal class Steam : IDisposable
 
     private bool Connect(string appId)
     {
-        File.WriteAllText(_appIdFile, appId);
+        File.WriteAllText(AppIdFile, appId);
         try
         {
             return SteamAPI.Init();
@@ -48,7 +47,7 @@ internal class Steam : IDisposable
     {
         uint achievementCount = SteamUserStats.GetNumAchievements();
         Log.Information("Achievements: {NumOfAchievements}", achievementCount);
-        
+
         var achievements = new List<string>();
         for (uint i = 0; i < achievementCount; i++)
         {
@@ -99,6 +98,8 @@ internal class Steam : IDisposable
         {
             Log.Error(ex, "Exception: {Achievement}", achievement);
         }
-        { alreadyDone = false; return false; }
+
+        alreadyDone = false;
+        return false;
     }
 }
