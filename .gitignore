@@ -1,5 +1,7 @@
 # Common IntelliJ Platform excludes
 
+/Build
+
 # User specific
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
