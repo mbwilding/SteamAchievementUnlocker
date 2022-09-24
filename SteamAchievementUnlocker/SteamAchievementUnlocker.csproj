@@ -5,9 +5,14 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <ApplicationIcon>Icon.ico</ApplicationIcon>
         <Platforms>x64</Platforms>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <AssemblyName>SteamAchievementUnlocker</AssemblyName>
+        <RootNamespace>SteamAchievementUnlocker</RootNamespace>
+        <Company>Wilding Studios</Company>
+        <Product>Steam Achievement Unlocker</Product>
+        <LangVersion>default</LangVersion>
+        <ApplicationIcon>Icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -38,7 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AchievementUnlockerAgent\AchievementUnlockerAgent.csproj" />
+        <ProjectReference Include="..\SteamAchievementUnlockerAgent\SteamAchievementUnlockerAgent.csproj" />
         <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 

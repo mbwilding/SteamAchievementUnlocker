@@ -1,4 +1,4 @@
-﻿using AchievementUnlockerAgent;
+﻿using SteamAchievementUnlockerAgent;
 
 Common.Serilog.Init("Achievements");
 

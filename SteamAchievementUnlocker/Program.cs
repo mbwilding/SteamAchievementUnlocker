@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Serilog;
 using System.Text.RegularExpressions;
-using AchievementUnlocker;
+using SteamAchievementUnlocker;
 
 const string title = "Achievement Unlocker";
 
@@ -20,7 +20,7 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
             
     Thread.Sleep(500);
 }
-string app = "Agent.exe";
+string app = "SteamAchievementUnlockerAgent.exe";
 #elif LINUX
     Log.Information("Make sure Steam is running and logged in");
     Log.Information("Otherwise the following will all fail");

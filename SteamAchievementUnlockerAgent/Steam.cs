@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Steamworks;
 
-namespace AchievementUnlockerAgent;
+namespace SteamAchievementUnlockerAgent;
 
 internal class Steam : IDisposable
 {

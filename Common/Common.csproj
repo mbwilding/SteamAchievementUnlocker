@@ -6,6 +6,8 @@
         <Nullable>enable</Nullable>
         <Platforms>x64</Platforms>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <LangVersion>default</LangVersion>
+        <Company>Wilding Studios</Company>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

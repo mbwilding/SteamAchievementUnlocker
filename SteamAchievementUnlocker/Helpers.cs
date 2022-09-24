@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 using Serilog;
 
-namespace AchievementUnlocker;
+namespace SteamAchievementUnlocker;
 
 public static class Helpers
 {

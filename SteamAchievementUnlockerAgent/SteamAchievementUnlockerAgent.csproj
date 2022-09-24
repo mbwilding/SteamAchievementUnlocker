@@ -5,9 +5,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Agent</AssemblyName>
         <Platforms>x64</Platforms>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <AssemblyName>SteamAchievementUnlockerAgent</AssemblyName>
+        <RootNamespace>SteamAchievementUnlockerAgent</RootNamespace>
+        <LangVersion>default</LangVersion>
+        <Company>Wilding Studios</Company>
+        <Product>Steam Achievement Unlocker Agent</Product>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

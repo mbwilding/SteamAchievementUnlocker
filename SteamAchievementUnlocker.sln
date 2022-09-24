@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AchievementUnlocker", "AchievementUnlocker\AchievementUnlocker.csproj", "{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAchievementUnlocker", "SteamAchievementUnlocker\SteamAchievementUnlocker.csproj", "{A6EADEC0-F81B-4E11-93C0-4F0487BF72AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AchievementUnlockerAgent", "AchievementUnlockerAgent\AchievementUnlockerAgent.csproj", "{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAchievementUnlockerAgent", "SteamAchievementUnlockerAgent\SteamAchievementUnlockerAgent.csproj", "{2EA39DB2-2FAB-453A-AC36-11D47E83FFAF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{39F2999F-CADC-4AB1-923B-37121FF9715B}"
 EndProject
