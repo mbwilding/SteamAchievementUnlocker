@@ -47,4 +47,30 @@
         <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
+    <Target Name="PostBuildCleanup" AfterTargets="PostBuildEvent">
+        <RemoveDir Directories="$(OutDir)runtimes/linux-x86" />
+        <RemoveDir Directories="$(OutDir)runtimes/osx-x86" />
+        <RemoveDir Directories="$(OutDir)runtimes/win-x86" />
+        <Delete Files="$(OutDir)Steamworks.NET.dll" />
+        <Message Text="x86 CLEAN UP" Importance="High" />
+    </Target>
+
+    <Target Name="PostBuildWindows" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('WIN'))">
+        <RemoveDir Directories="$(OutDir)runtimes/osx-x64" />
+        <RemoveDir Directories="$(OutDir)runtimes/linux-x64" />
+        <Message Text="LINUX BUILD CLEAN UP" Importance="High" />
+    </Target>
+
+    <Target Name="PostBuildMac" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('MAC'))">
+        <RemoveDir Directories="$(OutDir)runtimes/win-x64" />
+        <RemoveDir Directories="$(OutDir)runtimes/linux-x64" />
+        <Message Text="MAC BUILD CLEAN UP" Importance="High" />
+    </Target>
+
+    <Target Name="PostBuildLinux" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('LINUX'))">
+        <RemoveDir Directories="$(OutDir)runtimes/win-x64" />
+        <RemoveDir Directories="$(OutDir)runtimes/osx-x64" />
+        <Message Text="LINUX BUILD CLEAN UP" Importance="High" />
+    </Target>
+
 </Project>

@@ -67,4 +67,5 @@ foreach (var game in games)
     }
 }
 
+File.Delete("steam_appid.txt");
 Log.Information("Finished: {Title}", title);

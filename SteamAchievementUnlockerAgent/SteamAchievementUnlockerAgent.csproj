@@ -45,26 +45,4 @@
         <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
-    <Target Name="PostBuildx86" AfterTargets="PostBuildEvent">
-        <RemoveDir Directories="$(OutputPath)/runtimes/linux-x86" />
-        <RemoveDir Directories="$(OutputPath)/runtimes/osx-x86" />
-        <RemoveDir Directories="$(OutputPath)/runtimes/win-x86" />
-        <Delete Files="$(OutputPath)/Steamworks.NET.dll" />
-    </Target>
-
-    <Target Name="PostBuildWindows" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('WIN'))">
-        <RemoveDir Directories="$(OutputPath)/runtimes/osx-x64" />
-        <RemoveDir Directories="$(OutputPath)/runtimes/linux-x64" />
-    </Target>
-
-    <Target Name="PostBuildMac" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('MAC'))">
-        <RemoveDir Directories="$(OutputPath)/runtimes/win-x64" />
-        <RemoveDir Directories="$(OutputPath)/runtimes/linux-x64" />
-    </Target>
-
-    <Target Name="PostBuildLinux" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('LINUX'))">
-        <RemoveDir Directories="$(OutputPath)/runtimes/win-x64" />
-        <RemoveDir Directories="$(OutputPath)/runtimes/osx-x64" />
-    </Target>
-
 </Project>
