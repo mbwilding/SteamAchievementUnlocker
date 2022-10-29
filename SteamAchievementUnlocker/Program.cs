@@ -24,7 +24,7 @@ string app = "SteamAchievementUnlockerAgent.exe";
 #elif LINUX
     Log.Information("Make sure Steam is running and logged in");
     Log.Information("Otherwise the following will all fail");
-    string app = "Agent";
+    string app = "SteamAchievementUnlockerAgent";
     Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
 
