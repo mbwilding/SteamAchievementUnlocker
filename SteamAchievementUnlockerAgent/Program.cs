@@ -14,7 +14,8 @@ if (args.Length == 1)
     string id = args[0];
     if (!uint.TryParse(id, out _))
         Environment.Exit(1);
-    gameName = appId = id;
+    gameName = "Manual";
+    appId = id;
 }
 else
 {
