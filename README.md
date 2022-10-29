@@ -14,8 +14,8 @@ Download 'AchievementUnlocker-Linux64.zip' from the release section<br>
 Make sure Steam is logged in.<br>
 Extract the files, then in the CLI browse to the directory.<br>
 Run these commands;<br>
-sudo chmod +x AchievementUnlocker && chmod +x Agent
-./AchievementUnlocker
+`sudo chmod +x SteamAchievementUnlocker SteamAchievementUnlockerAgent`<br>
+`./AchievementUnlocker`
 
 **[Usage]**<br>
 To use, run 'SteamAchievementUnlocker'<br>
