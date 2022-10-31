@@ -1,12 +1,8 @@
-﻿using System.Diagnostics;
-using Serilog;
+﻿using Serilog;
 using System.Text.RegularExpressions;
 using SteamAchievementUnlocker;
 
-const string title = "Achievement Unlocker";
-
-Common.Serilog.Init(title);
-Log.Information("Started: {Title}", title);
+Common.Serilog.Init("Achievement Unlocker");
 
 #if WIN
 bool first = true;
@@ -18,7 +14,7 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
         first = false;
     }
             
-    Thread.Sleep(500);
+    await Task.Delay(500);
 }
 string app = "SteamAchievementUnlockerAgent.exe";
 #elif LINUX
@@ -57,6 +53,5 @@ else
     }
 }
 
-Log.Information("Finished: {Title}", title);
 Console.WriteLine("\nPress any key to exit");
 Console.ReadKey();
