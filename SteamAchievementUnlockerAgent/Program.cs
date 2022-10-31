@@ -1,4 +1,5 @@
-﻿using SteamAchievementUnlockerAgent;
+﻿using Serilog;
+using SteamAchievementUnlockerAgent;
 
 Common.Serilog.Init("Achievements");
 
@@ -7,27 +8,19 @@ Common.Serilog.Init("Achievements");
 #endif
 
 string gameName = string.Empty;
-string appId = string.Empty;
+string appId;
 
-if (args.Length == 1)
+if (args.Length < 2)
 {
-    string id = args[0];
-    if (!uint.TryParse(id, out _))
-        Environment.Exit(1);
-    gameName = "Manual";
-    appId = id;
-}
-else
-{
-    if (args.Length < 2)
-        Environment.Exit(1);
-
-    for (int i = 0; i < args.Length - 1; i++)
-        gameName += $"{args[i]} ";
-    gameName = gameName.TrimEnd();
-    appId = args[^1];
+    Log.Error("Invalid argument count");
+    Environment.Exit(1);
 }
 
-var steam = new Steam();
-var result = steam.Init(gameName, appId);
+for (int i = 0; i < args.Length - 1; i++)
+    gameName += $"{args[i]} ";
+gameName = gameName.TrimEnd();
+appId = args[^1];
+
+var steam = new Steam(gameName, appId);
+var result = await steam.Init();
 Environment.Exit(result);

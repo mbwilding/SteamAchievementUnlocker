@@ -28,44 +28,35 @@ string app = "SteamAchievementUnlockerAgent.exe";
     Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
 
-var games = Helpers.GetGameList().Result;
-foreach (var game in games)
+if (args.Any())
 {
-    var gameName = game.Key
-        .Trim(Path.GetInvalidFileNameChars())
-        .Trim(Path.GetInvalidPathChars());
-
-    var appId = game.Value;
-
-    Regex rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
-    gameName = rgx.Replace(gameName, "");
-    string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()}";
-    var startInfo = new ProcessStartInfo
+    foreach (var appId in args)
     {
-        WindowStyle = ProcessWindowStyle.Hidden,
-        FileName = app,
-        Arguments = arguments,
-        CreateNoWindow = true,
-        UseShellExecute = false
-    };
-#if LINUX
-    startInfo.RedirectStandardOutput = true;
-    startInfo.RedirectStandardError = true;
-#endif
-    var agent = Process.Start(startInfo);
-    if (agent is not null)
-    {
-        agent.WaitForExit();
-        if (agent.ExitCode == 0)
-            Log.Information("Agent success: {GameName}", gameName);
+        if (uint.TryParse(appId, out _))
+        {
+            Agent.Run(app, appId, "Manual");
+        }
         else
-            Log.Error("Agent failed: {GameName}", gameName);
+            Log.Error("Please enter a numerical app ID: {Arg}", appId);
     }
-    else
+}
+else
+{
+    var games = await Helpers.GetGameList();
+    foreach (var game in games)
     {
-        Log.Error("Agent failed to launch: {GameName}", gameName);
+        var gameName = game.Key
+            .Trim(Path.GetInvalidFileNameChars())
+            .Trim(Path.GetInvalidPathChars());
+
+        var appId = game.Value;
+
+        Regex rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
+        gameName = rgx.Replace(gameName, "");
+        Agent.Run(app, appId, gameName);
     }
 }
 
-File.Delete("steam_appid.txt");
 Log.Information("Finished: {Title}", title);
+Console.WriteLine("\nPress any key to exit");
+Console.ReadKey();

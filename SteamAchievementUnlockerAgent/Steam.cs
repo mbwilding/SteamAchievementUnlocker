@@ -6,21 +6,22 @@ namespace SteamAchievementUnlockerAgent;
 internal class Steam : IDisposable
 {
     private const string AppIdFile = "steam_appid.txt";
+    private readonly string _gameName;
+    private readonly string _appId;
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
 
-    public void Dispose()
+    public Steam(string gameName, string appId)
     {
-        SteamAPI.Shutdown();
-        SteamAPI.ReleaseCurrentThreadMemory();
-        File.Delete(AppIdFile);
+        _gameName = gameName;
+        _appId = appId;
     }
 
-    internal ushort Init(string gameName, string appId)
+    internal async Task<ushort> Init()
     {
-        if (!Connect(appId)) return 1;
+        if (!await Connect(_appId)) return 1;
         SteamUserStats.RequestCurrentStats();
-        Log.Information("Game: {GameName}", gameName);
-        Log.Information("App: {AppId}", appId);
+        Log.Information("Game: {GameName}", _gameName);
+        Log.Information("App: {AppId}", _appId);
         var achievements = ListAchievements();
         if (achievements.Any())
             UnlockAchievements(achievements);
@@ -29,9 +30,9 @@ internal class Steam : IDisposable
         return 0;
     }
 
-    private bool Connect(string appId)
+    private async Task<bool> Connect(string appId)
     {
-        File.WriteAllText(AppIdFile, appId);
+        await File.WriteAllTextAsync(AppIdFile, appId);
         try
         {
             return SteamAPI.Init();
@@ -124,12 +125,23 @@ internal class Steam : IDisposable
                 return false;
             }
         }
+        catch (InvalidOperationException ex)
+        {
+            Log.Error(ex, "Invalid Operation Exception: {Achievement}", achievement);
+        }
         catch (Exception ex)
         {
-            Log.Error(ex, "Exception: {Achievement}", achievement);
+            Log.Error(ex, "Unknown Exception: {Achievement}", achievement);
         }
 
         alreadyDone = false;
         return false;
+    }
+    
+    public void Dispose()
+    {
+        SteamAPI.Shutdown();
+        SteamAPI.ReleaseCurrentThreadMemory();
+        File.Delete(AppIdFile);
     }
 }
