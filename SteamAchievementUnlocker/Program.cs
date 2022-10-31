@@ -14,7 +14,7 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
 {
     if (first)
     {
-        Log.Information("Waiting for you to log into Steam");
+        Log.Information("Waiting for you to log into Steam\n");
         first = false;
     }
             
@@ -23,7 +23,7 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
 string app = "SteamAchievementUnlockerAgent.exe";
 #elif LINUX
     Log.Information("Make sure Steam is running and logged in");
-    Log.Information("Otherwise the following will all fail");
+    Log.Information("Otherwise the following will all fail\n");
     string app = "SteamAchievementUnlockerAgent";
     Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
