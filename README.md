@@ -21,4 +21,8 @@ Run these commands;<br>
 If you only want to unlock for specific app IDs, just add them on the end seperated by spaces.<br>
 `./SteamAchievementUnlocker 730 813780`<br>
 
+**[Clearing achievements]**<br>
+Add the switch statement to the arguments<br>
+`-clear`
+
 _**Requires .NET 6 SDK to build from source**_<br>

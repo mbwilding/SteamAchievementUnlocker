@@ -24,13 +24,17 @@ string app = "SteamAchievementUnlockerAgent.exe";
     Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
 
-if (args.Any())
+const string clearString = "-clear";
+bool clearToggle = args.Contains(clearString);
+var argsList = args.Where(x => !x.Contains(clearString)).ToList();
+
+if (argsList.Any())
 {
-    foreach (var appId in args)
+    foreach (var appId in argsList)
     {
         if (uint.TryParse(appId, out _))
         {
-            Agent.Run(app, appId, "Manual");
+            Agent.Run(app, appId, "Manual", clearToggle);
         }
         else
             Log.Error("Please enter a numerical app ID: {Arg}", appId);
@@ -49,7 +53,7 @@ else
 
         Regex rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
         gameName = rgx.Replace(gameName, "");
-        Agent.Run(app, appId, gameName);
+        Agent.Run(app, appId, gameName, clearToggle);
     }
 }
 

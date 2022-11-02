@@ -5,9 +5,9 @@ namespace SteamAchievementUnlocker;
 
 public class Agent
 {
-    public static void Run(string app, string appId, string gameName)
+    public static void Run(string app, string appId, string gameName, bool clear)
     {
-        string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()}";
+        string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()} clear={clear}";
         
         var startInfo = new ProcessStartInfo
         {
