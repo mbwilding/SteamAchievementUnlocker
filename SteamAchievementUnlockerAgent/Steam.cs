@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks.Dataflow;
+using Common;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Retry;
@@ -14,19 +15,21 @@ internal class Steam : IDisposable
     private readonly string _appId;
     private readonly bool _clear;
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
-    
-    private const int Parallelism = 5;
+
+    private readonly Config.Settings _settings;
 
     private readonly RetryPolicy _policyException;
     private readonly RetryPolicy<bool> _policyBool;
 
     public Steam(string gameName, string appId, bool clear)
     {
+        _settings = Config.Get();
+
         _gameName = gameName;
         _appId = appId;
         _clear = clear;
         
-        var backoff = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(0.10), retryCount: 5);
+        var backoff = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(0.10), retryCount: _settings.Retries);
         // ReSharper disable PossibleMultipleEnumeration
         _policyException = Policy
             .Handle<InvalidOperationException>()
@@ -38,12 +41,12 @@ internal class Steam : IDisposable
         // ReSharper enable PossibleMultipleEnumeration
     }
 
-    internal async Task<int> Init()
+    internal async Task<int> InitAsync()
     {
         Log.Information("Game: {GameName}", _gameName);
         Log.Information("App: {AppId}", _appId);
 
-        if (!await Connect(_appId).ConfigureAwait(false))
+        if (!await ConnectAsync(_appId).ConfigureAwait(false))
         {
             Log.Error("Couldn't connect to steam");
             return -1;
@@ -72,7 +75,7 @@ internal class Steam : IDisposable
             Log.Information("{Delimiter}", _delimiter);
             
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
-            var settings = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = Parallelism };
+            var settings = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _settings.ParallelismAchievements };
         
             var splitAchievementNum = new TransformManyBlock<uint, uint>(x => Enumerable.Range(0, (int) x).Select(y => (uint) y), settings);
             var numToAchievementName = new TransformBlock<uint, string>(x => _policyException.Execute(() => SteamUserStats.GetAchievementName(x)), settings);
@@ -98,7 +101,7 @@ internal class Steam : IDisposable
         return 0;
     }
     
-    private async Task<bool> Connect(string appId)
+    private async Task<bool> ConnectAsync(string appId)
     {
         await File.WriteAllTextAsync(AppIdFile, appId).ConfigureAwait(false);
         try
@@ -158,6 +161,5 @@ internal class Steam : IDisposable
     {
         SteamAPI.Shutdown();
         SteamAPI.ReleaseCurrentThreadMemory();
-        File.Delete(AppIdFile);
     }
 }

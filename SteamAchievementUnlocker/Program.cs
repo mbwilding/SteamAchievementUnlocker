@@ -1,8 +1,14 @@
-﻿using Serilog;
+﻿using System.Diagnostics;
+using Serilog;
 using System.Text.RegularExpressions;
+using Common;
 using SteamAchievementUnlocker;
 
-Common.Serilog.Init("Achievement Unlocker");
+Process.GetProcessesByName("SteamAchievementUnlockerAgent")
+    .ToList()
+    .ForEach(x => x.Kill());
+
+Common.Serilog.Init("Achievement Unlocker", false);
 
 #if WIN
 bool first = true;
@@ -28,22 +34,24 @@ const string clearString = "--clear";
 bool clearToggle = args.Contains(clearString);
 var argsList = args.Where(x => !x.Contains(clearString)).ToList();
 
+var settings = Config.Get();
+var options = new ParallelOptions { MaxDegreeOfParallelism = settings.ParallelismApps };
+
 if (argsList.Any())
 {
-    foreach (var appId in argsList)
+    await Parallel.ForEachAsync(argsList.Distinct(), options, async (appId, _) =>
     {
-        if (uint.TryParse(appId, out _))
-        {
-            Agent.Run(app, appId, appId, clearToggle);
-        }
+        if (uint.TryParse(appId, out var _))
+            await Agent.RunAsync(app, appId, appId, clearToggle).ConfigureAwait(false);
         else
             Log.Error("Please enter a numerical app ID: {Arg}", appId);
-    }
+    }).ConfigureAwait(false);
 }
 else
 {
-    var games = await Helpers.GetGameList().ConfigureAwait(false);
-    foreach (var game in games)
+    var games = await Helpers.GetGameListAsync().ConfigureAwait(false);
+    
+    await Parallel.ForEachAsync(games, options, async (game, _) =>
     {
         var gameName = game.Key
             .Trim(Path.GetInvalidFileNameChars())
@@ -52,10 +60,13 @@ else
         var appId = game.Value;
 
         Regex rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
-        gameName = rgx.Replace(gameName, "");
-        Agent.Run(app, appId, gameName, clearToggle);
-    }
+        gameName = rgx.Replace(gameName, string.Empty);
+        await Agent.RunAsync(app, appId, gameName, clearToggle).ConfigureAwait(false);
+    }).ConfigureAwait(false);
 }
+
+if (Directory.Exists("Apps"))
+    Directory.Delete("Apps", true);
 
 Console.WriteLine("\nPress any key to exit");
 Console.ReadKey();

@@ -5,7 +5,7 @@ namespace SteamAchievementUnlocker;
 
 public static class Helpers
 {
-    internal static async Task<Dictionary<string, string>> GetGameList()
+    internal static async Task<Dictionary<string, string>> GetGameListAsync()
     {
         ulong profileId;
 #if WIN

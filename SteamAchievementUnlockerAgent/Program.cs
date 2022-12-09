@@ -15,9 +15,9 @@ gameName = gameName.TrimEnd();
 var appId = args[^2];
 var clear = args[^1].Contains("clear=True");
 
-Common.Serilog.Init($"Achievements/{appId}");
+Common.Serilog.Init($"Achievements/{appId}", true);
 
 var steam = new Steam(gameName, appId, clear);
-var result = await steam.Init().ConfigureAwait(false);
+var result = await steam.InitAsync().ConfigureAwait(false);
 steam.Dispose();
 Environment.Exit(result);
