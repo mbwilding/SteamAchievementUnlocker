@@ -9,14 +9,10 @@ public static class Serilog
 {
     public static void Init(string name)
     {
-        SelfLog.Enable(message => Trace.WriteLine($"INTERNAL ERROR: {message}"));
-        
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Verbose()
-            .WriteTo.Console(LogEventLevel.Information)
-            .WriteTo.File(
-                $"Logs/{name}..log",
-                rollingInterval: RollingInterval.Day)
+            .WriteTo.Async(x => x.Console(LogEventLevel.Information))
+            .WriteTo.Async(x => x.File($"Logs/{DateTime.Now:yyyyMMdd}/{name}.log"))
             .CreateLogger();
     }
 }
