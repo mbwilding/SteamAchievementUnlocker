@@ -13,8 +13,8 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
         Log.Information("Waiting for you to log into Steam\n");
         first = false;
     }
-            
-    await Task.Delay(500);
+
+    await Task.Delay(500).ConfigureAwait(false);
 }
 string app = "SteamAchievementUnlockerAgent.exe";
 #elif LINUX
@@ -24,7 +24,7 @@ string app = "SteamAchievementUnlockerAgent.exe";
     Environment.SetEnvironmentVariable("LD_PRELOAD", Path.Combine(Directory.GetCurrentDirectory(), "libsteam_api.so"));
 #endif
 
-const string clearString = "-clear";
+const string clearString = "--clear";
 bool clearToggle = args.Contains(clearString);
 var argsList = args.Where(x => !x.Contains(clearString)).ToList();
 
@@ -34,7 +34,7 @@ if (argsList.Any())
     {
         if (uint.TryParse(appId, out _))
         {
-            Agent.Run(app, appId, "Manual", clearToggle);
+            Agent.Run(app, appId, appId, clearToggle);
         }
         else
             Log.Error("Please enter a numerical app ID: {Arg}", appId);
@@ -42,7 +42,7 @@ if (argsList.Any())
 }
 else
 {
-    var games = await Helpers.GetGameList();
+    var games = await Helpers.GetGameList().ConfigureAwait(false);
     foreach (var game in games)
     {
         var gameName = game.Key

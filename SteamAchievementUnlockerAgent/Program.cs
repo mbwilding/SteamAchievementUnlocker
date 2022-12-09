@@ -24,6 +24,6 @@ appId = args[^2];
 clear = args[^1].Contains("clear=True");
 
 var steam = new Steam(gameName, appId, clear);
-var result = await steam.Init();
+var result = await steam.Init().ConfigureAwait(false);
 steam.Dispose();
 Environment.Exit(result);

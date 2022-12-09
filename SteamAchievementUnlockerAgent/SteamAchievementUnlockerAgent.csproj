@@ -38,6 +38,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Polly" Version="7.2.3" />
+        <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
         <PackageReference Include="Steamworks.NET" Version="20.1.0" />
     </ItemGroup>
 
