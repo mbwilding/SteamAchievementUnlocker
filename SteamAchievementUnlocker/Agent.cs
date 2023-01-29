@@ -20,10 +20,12 @@ public class Agent
             UseShellExecute = false,
             WorkingDirectory = dir
         };
-#if LINUX
+
+#if LINUX || MAC
         startInfo.RedirectStandardOutput = true;
         startInfo.RedirectStandardError = true;
 #endif
+
         var agent = Process.Start(startInfo);
         if (agent is not null)
         {

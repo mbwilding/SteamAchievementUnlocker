@@ -1,6 +1,6 @@
 ﻿using SteamAchievementUnlockerAgent;
 
-#if LINUX
+#if LINUX || MAC
     Console.SetOut(TextWriter.Null);
 #endif
 

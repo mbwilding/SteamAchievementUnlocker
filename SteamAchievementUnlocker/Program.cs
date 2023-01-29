@@ -23,7 +23,7 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
     await Task.Delay(500).ConfigureAwait(false);
 }
 string app = "SteamAchievementUnlockerAgent.exe";
-#elif LINUX
+#elif LINUX || MAC
     Log.Information("Make sure Steam is running and logged in");
     Log.Information("Otherwise the following will all fail\n");
     string app = "SteamAchievementUnlockerAgent";

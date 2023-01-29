@@ -14,7 +14,13 @@ public static class Helpers
 #elif LINUX
         var homeDir = Environment.GetEnvironmentVariable("HOME");
         var file = ".steam/steam/config/loginusers.vdf";
-        var combined = Path.Combine(homeDir!, file);
+#elif MAC
+        var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        var file = "Library/Application Support/Steam/config/loginusers.vdf";
+#endif
+        
+#if LINUX || MAC
+        var combined = Path.Combine(homeDir, file);
         var lines = await File.ReadAllLinesAsync(combined);
         var steamIds = lines
             .ToList()
