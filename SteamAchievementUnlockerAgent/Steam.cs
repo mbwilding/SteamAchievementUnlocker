@@ -28,13 +28,14 @@ internal class Steam : IDisposable
         _gameName = gameName;
         _appId = appId;
         _clear = clear;
-        
+
         var backoff = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(0.10), retryCount: _settings.Retries);
+
         // ReSharper disable PossibleMultipleEnumeration
         _policyException = Policy
             .Handle<InvalidOperationException>()
             .WaitAndRetry(backoff);
-        
+
         _policyBool = Policy
             .HandleResult(false)
             .WaitAndRetry(backoff);
@@ -51,7 +52,7 @@ internal class Steam : IDisposable
             Log.Error("Couldn't connect to steam");
             return -1;
         }
-        
+
         try
         {
             InteropHelp.TestIfAvailableClient();
@@ -60,7 +61,7 @@ internal class Steam : IDisposable
         {
             Log.Error(ex, "SteamWorks not available");
         }
-        
+
         if (!SteamUserStats.RequestCurrentStats())
         {
             Log.Error("Couldn't retrieve stats");
@@ -73,13 +74,13 @@ internal class Steam : IDisposable
         if (achievementCount > 0)
         {
             Log.Information("{Delimiter}", _delimiter);
-            
+
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
             var settings = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _settings.ParallelismAchievements };
-        
+
             var splitAchievementNum = new TransformManyBlock<uint, uint>(x => Enumerable.Range(0, (int) x).Select(y => (uint) y), settings);
             var numToAchievementName = new TransformBlock<uint, string>(x => _policyException.Execute(() => SteamUserStats.GetAchievementName(x)), settings);
-            
+
             var unlockAchievement = new ActionBlock<string>(UnlockAchievement, settings);
             var clearAchievement = new ActionBlock<string>(ClearAchievement, settings);
 
@@ -95,12 +96,12 @@ internal class Steam : IDisposable
             else
                 await unlockAchievement.Completion.WaitAsync(CancellationToken.None).ConfigureAwait(false);
         }
-        
+
         Log.Information("{Delimiter}", _delimiter);
-        
+
         return 0;
     }
-    
+
     private async Task<bool> ConnectAsync(string appId)
     {
         await File.WriteAllTextAsync(AppIdFile, appId).ConfigureAwait(false);
@@ -122,7 +123,7 @@ internal class Steam : IDisposable
 
         if (result)
         {
-            Log.Debug("Already Achieved: {Achievement}", achievement);
+            Log.Information("Already Achieved: {Achievement}", achievement);
             return;
         }
 
@@ -132,7 +133,7 @@ internal class Steam : IDisposable
             Log.Information("Unlocked: {Achievement}", achievement);
             return;
         }
-        
+
         Log.Error("Failed: {Achievement}", achievement);
     }
 
@@ -143,7 +144,7 @@ internal class Steam : IDisposable
 
         if (!result)
         {
-            Log.Debug("Already Cleared: {Achievement}", achievement);
+            Log.Information("Already Cleared: {Achievement}", achievement);
             return;
         }
 
