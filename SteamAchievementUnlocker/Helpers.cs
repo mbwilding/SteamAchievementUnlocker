@@ -20,7 +20,7 @@ public static class Helpers
 #endif
         
 #if LINUX || MAC
-        var combined = Path.Combine(homeDir, file);
+        var combined = Path.Combine(homeDir!, file);
         var lines = await File.ReadAllLinesAsync(combined);
         var steamIds = lines
             .ToList()
