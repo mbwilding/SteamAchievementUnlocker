@@ -9,7 +9,7 @@ public class Agent
     {
         var dir = Clone(appId);
         
-        string arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()} clear={clear}";
+        var arguments = $"{string.Concat(string.Join(' ', gameName.Trim()))} {appId.Trim()} clear={clear}";
 
         var startInfo = new ProcessStartInfo
         {
@@ -27,13 +27,17 @@ public class Agent
 #endif
 
         var agent = Process.Start(startInfo);
-        if (agent is not null)
+        if (agent != null)
         {
             await agent.WaitForExitAsync().ConfigureAwait(false);
             if (agent.ExitCode == 0)
+            {
                 Log.Information("Agent success: {GameName} [{AppId}]", gameName, appId);
+            }
             else
+            {
                 Log.Error("Agent failed: {GameName} [{AppId}]", gameName, appId);
+            }
         }
         else
         {
@@ -65,9 +69,11 @@ public class Agent
             Directory.CreateDirectory($"{directory}");
             File.CreateSymbolicLink($"{directory}/{Path.GetFileName(file)}", file);
         }
-        
+
         foreach (var file in files)
+        {
             File.CreateSymbolicLink($"{dir}{Path.GetFileName(file)}", file);
+        }
 
         return dir;
     }

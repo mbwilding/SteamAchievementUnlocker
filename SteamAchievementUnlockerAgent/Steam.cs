@@ -16,20 +16,16 @@ internal class Steam : IDisposable
     private readonly bool _clear;
     private readonly string _delimiter = string.Concat(Enumerable.Repeat("-", 20));
 
-    private readonly Config.Settings _settings;
-
     private readonly RetryPolicy _policyException;
     private readonly RetryPolicy<bool> _policyBool;
 
     public Steam(string gameName, string appId, bool clear)
     {
-        _settings = Config.Get();
-
         _gameName = gameName;
         _appId = appId;
         _clear = clear;
 
-        var backoff = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(0.10), retryCount: _settings.Retries);
+        var backoff = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(0.10), retryCount: Config.Retries);
 
         // ReSharper disable PossibleMultipleEnumeration
         _policyException = Policy
@@ -68,7 +64,7 @@ internal class Steam : IDisposable
             return -1;
         }
 
-        uint achievementCount = _policyException.Execute(SteamUserStats.GetNumAchievements);
+        var achievementCount = _policyException.Execute(SteamUserStats.GetNumAchievements);
         Log.Information("Achievements: {NumOfAchievements}", achievementCount);
 
         if (achievementCount > 0)
@@ -76,7 +72,7 @@ internal class Steam : IDisposable
             Log.Information("{Delimiter}", _delimiter);
 
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
-            var settings = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _settings.ParallelismAchievements };
+            var settings = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = Config.ParallelismAchievements };
 
             var splitAchievementNum = new TransformManyBlock<uint, uint>(x => Enumerable.Range(0, (int) x).Select(y => (uint) y), settings);
             var numToAchievementName = new TransformBlock<uint, string>(x => _policyException.Execute(() => SteamUserStats.GetAchievementName(x)), settings);
@@ -92,9 +88,13 @@ internal class Steam : IDisposable
             splitAchievementNum.Complete();
 
             if (_clear)
+            {
                 await clearAchievement.Completion.WaitAsync(CancellationToken.None).ConfigureAwait(false);
+            }
             else
+            {
                 await unlockAchievement.Completion.WaitAsync(CancellationToken.None).ConfigureAwait(false);
+            }
         }
 
         Log.Information("{Delimiter}", _delimiter);
@@ -118,7 +118,7 @@ internal class Steam : IDisposable
 
     private void UnlockAchievement(string achievement)
     {
-        bool result = false;
+        var result = false;
         _policyBool.Execute(() => SteamUserStats.GetAchievement(achievement, out result));
 
         if (result)
@@ -139,7 +139,7 @@ internal class Steam : IDisposable
 
     private void ClearAchievement(string achievement)
     {
-        bool result = false;
+        var result = false;
         _policyBool.Execute(() => SteamUserStats.GetAchievement(achievement, out result));
 
         if (!result)

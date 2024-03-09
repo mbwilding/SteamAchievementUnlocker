@@ -1,6 +1,7 @@
 # Common IntelliJ Platform excludes
 
 /Build
+/Publish
 
 # User specific
 **/.idea/**/workspace.xml

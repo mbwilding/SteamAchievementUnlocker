@@ -36,9 +36,9 @@ public static class Helpers
         try
         {
             using var client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(false);
+            var response = await client.GetAsync(url).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             // Above three lines can be replaced with new helper method below
             // string responseBody = await client.GetStringAsync(uri);
 
@@ -69,7 +69,7 @@ public static class Helpers
     
     private static Dictionary<string, string> ParseXmlToDictionary(string xml)
     {
-        XDocument doc = XDocument.Parse(xml, LoadOptions.None);
+        var doc = XDocument.Parse(xml, LoadOptions.None);
 
         try
         {
@@ -110,7 +110,7 @@ public static class Helpers
 #if WIN
     internal static uint ReadRegistry(string basePath, string dword)
     {
-        Microsoft.Win32.RegistryKey key = Microsoft.Win32.RegistryKey.OpenBaseKey(
+        var key = Microsoft.Win32.RegistryKey.OpenBaseKey(
             Microsoft.Win32.RegistryHive.CurrentUser, Microsoft.Win32.RegistryView.Registry64);
 
         key = key.OpenSubKey(basePath)!;

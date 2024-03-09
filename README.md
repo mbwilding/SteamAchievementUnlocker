@@ -23,4 +23,4 @@ If you only want to unlock for specific app IDs, just add them on the end sepera
 Add the switch statement to the arguments<br>
 `--clear`
 
-_**Requires .NET 7 SDK to build from source**_<br>
+_**Requires .NET 8 SDK to build from source**_<br>

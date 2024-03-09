@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using Serilog;
 using System.Text.RegularExpressions;
 using Common;
+using Serilog;
 using SteamAchievementUnlocker;
 
 Process.GetProcessesByName("SteamAchievementUnlockerAgent")
@@ -11,7 +11,7 @@ Process.GetProcessesByName("SteamAchievementUnlockerAgent")
 Common.Serilog.Init("Achievement Unlocker", false);
 
 #if WIN
-bool first = true;
+var first = true;
 while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser") == 0)
 {
     if (first)
@@ -22,7 +22,7 @@ while (Helpers.ReadRegistry(@"Software\Valve\Steam\ActiveProcess", "ActiveUser")
 
     await Task.Delay(500).ConfigureAwait(false);
 }
-string app = "SteamAchievementUnlockerAgent.exe";
+var app = "SteamAchievementUnlockerAgent.exe";
 #elif LINUX || MAC
     Log.Information("Make sure Steam is running and logged in");
     Log.Information("Otherwise the following will all fail\n");
@@ -31,13 +31,12 @@ string app = "SteamAchievementUnlockerAgent.exe";
 #endif
 
 const string clearString = "--clear";
-bool clearToggle = args.Contains(clearString);
+var clearToggle = args.Contains(clearString);
 var argsList = args.Where(x => !x.Contains(clearString)).ToList();
 
-var settings = Config.Get();
-var options = new ParallelOptions { MaxDegreeOfParallelism = settings.ParallelismApps };
+var options = new ParallelOptions { MaxDegreeOfParallelism = Config.ParallelismApps };
 
-if (argsList.Any())
+if (argsList.Count != 0)
 {
     await Parallel.ForEachAsync(argsList.Distinct(), options, async (appId, _) =>
     {
@@ -59,14 +58,16 @@ else
 
         var appId = game.Value;
 
-        Regex rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
+        var rgx = new Regex("[^a-zA-Z0-9 ()&$:_ -]");
         gameName = rgx.Replace(gameName, string.Empty);
         await Agent.RunAsync(app, appId, gameName, clearToggle).ConfigureAwait(false);
     }).ConfigureAwait(false);
 }
 
 if (Directory.Exists("Apps"))
+{
     Directory.Delete("Apps", true);
+}
 
 Console.WriteLine("\nPress any key to exit");
 Console.ReadKey();
